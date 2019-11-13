@@ -1,41 +1,53 @@
-# import scrapy
+import dash
+import dash_core_components as dcc
+import dash_html_components as html
+import pandas as pd
+import plotly.graph_objs as go
 
-# # Create the Spider class
-# class DCspider( scrapy.Spider ):
-#   name = 'dcspider'
-#   url_short ="books.toscrape.com"
-#   # start_requests method
-#   def start_requests( self ):
-#     yield scrapy.Request( url = url_short, callback = self.parse )
-#   # parse method
-#   def parse( self,response ):
-#     # Create an extracted list of course author names
-#     author_names = response.css('p.course-block__author-name ::text').extract()
-#     # Here we will just return the list of Authors
-#     return author_names
-  
-# # Inspect the spider
-# inspect_spider( DCspider )
+external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
+app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 
-import scrapy
-from scrapy.crawler import CrawlerProcess
-from scrapy import selector
+df = pd.read_csv(
+    'https://gist.githubusercontent.com/chriddyp/' +
+    '5d1ea79569ed194d432e56108a04d188/raw/' +
+    'a9f9e8076b837d541398e999dcbac2b2826a81f8/'+
+    'gdp-life-exp-2007.csv')
+df1 = pd.read_csv('IMDB/clean_data.csv')
 
-# Create the Spider class
-class DCspider( scrapy.Spider ):
-  name = 'dcspider'
-  # start_requests method
-  def start_requests( self ):
-    yield scrapy.Request( url = 'http://books.toscrape.com/', callback = self.parse )
+app.layout = html.Div([
+    html.H1(children='US Agriculture Exports (2011)'),
+    dcc.Graph(
+        id='life-exp-vs-gdp',
+        figure={
+            'data': [
+                go.Scatter(
+                    # x=df[df['continent'] == i]['gdp per capita'],
+                    # y=df[df['continent'] == i]['life expectancy'],
+                    # text=df[df['continent'] == i]['country'],
+                    x=df1[df1['Year'] == i]['Metascore'],
+                    y=df1[df1['Year'] == i]['Gross Amount'],
+                    text=df1[df1['Year'] == i]['Movie_Name'],
+                    mode='markers',
+                    opacity=0.7,
+                    marker={
+                        'size': 15,
+                        'line': {'width': 0.5, 'color': 'white'}
+                    },
+                    name=i
+                ) #for i in df.continent.unique()
+                  for i in df1.Year.unique()
+            ],
+            'layout': go.Layout(
+                xaxis={'type': 'log', 'title': 'GDP Per Capita'},
+                yaxis={'title': 'Life Expectancy'},
+                margin={'l': 40, 'b': 40, 't': 10, 'r': 10},
+                legend={'x': 0, 'y': 1},
+                hovermode='closest'
+            )
+        }
+    )
+])
 
-
-  # parse method
-  # def parse( self,response ):
-  #   # Create an extracted list of course author names
-  #   author_names = response.css('p.course-block__author-name ::text').extract()
-  #   # Here we will just return the list of Authors
-  #   return author_names
-  
-# Inspect the spider
-#inspect_spider( DCspider )
+if __name__ == '__main__':
+    app.run_server(debug=True)
