@@ -8,6 +8,6 @@ The website i scrapped was "https://www.imdb.com/search/title/?genres=comedy&gen
 
 I scrapped all the results and cleaned the data as i only noticed that its movies and TV series . 
 
-The notebook i used to read and clean the data is IMDB.ipynb
+The notebook i used to read and clean the data is IMDB/IMDB.ipynb
 
 
