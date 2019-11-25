@@ -10,9 +10,13 @@ app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 
 df1 = pd.read_csv('IMDB/clean_data.csv')
 df1 = df1[['Movie_Name','Year','Votes','Genre','Runtime','Synopsis','Gross Amount','Rating','Metascore']]
+new_list_rating = df1['Rating'].round()
 asd = df1.groupby('Year',as_index=False)
-qaz = asd['Gross Amount'].sum()*1000000
+qaz = asd['Gross Amount'].sum()
+qaz['Gross Amount'] = qaz['Gross Amount']*1000000
 s2 = qaz.astype('int64')
+
+
 
 colors = {
     'background': '#111111',
@@ -58,19 +62,50 @@ app.layout = html.Div([
                go.Scatter(
 
                     x=s2['Year'],
-                    y=s2['Rating'],
-                    hovertext=df1['Movie_Name'],
-                    hoverinfo="text",
-                    mode='markers',
+                    y=s2['Gross Amount'],
+                    #hovertext=df1['Movie_Name'],
+                    #hoverinfo="text",
+                    mode='lines',
                     opacity=0.7,
-                    marker={
-                        'size': 15,
-                        'line': {'width': 0.5, 'color': 'white'}
-                    }
+                    # marker={
+                    #     'size': 15,
+                    #     'line': {'width': 0.5, 'color': 'white'}
+                    # }
                 )
             ],
             'layout': go.Layout(
-                    
+                 title='Gross amount over the years',
+                xaxis={'title': 'Years'},
+                yaxis={'title': 'Gross Amount'},
+                hovermode='closest'   
+    )
+        }
+),
+    dcc.Markdown(children='This is where i would write about the previous graph'),
+
+    dcc.Graph(
+        id='Line_Graph_date_and_gross_amount2',
+        figure={
+            'data': [
+               go.Pie(
+                   values=new_list_rating,
+                    # x=s2['Year'],
+                    # y=s2['Gross Amount'],
+                    #hovertext=df1['Movie_Name'],
+                    #hoverinfo="text",
+                   # mode='lines',
+                    #opacity=0.7,
+                    # marker={
+                    #     'size': 15,
+                    #     'line': {'width': 0.5, 'color': 'white'}
+                    # }
+                )
+            ],
+            'layout': go.Layout(
+                 title='Gross amount over the years',
+                xaxis={'title': 'Years'},
+                yaxis={'title': 'Gross Amount'},
+                hovermode='closest'   
     )
         }
 )
